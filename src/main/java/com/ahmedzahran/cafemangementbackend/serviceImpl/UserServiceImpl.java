@@ -1,5 +1,8 @@
 package com.ahmedzahran.cafemangementbackend.serviceImpl;
 
+import com.ahmedzahran.cafemangementbackend.JWT.CustomerUsersDetailsService;
+import com.ahmedzahran.cafemangementbackend.JWT.JwtRequestFilter;
+import com.ahmedzahran.cafemangementbackend.JWT.JwtUtil;
 import com.ahmedzahran.cafemangementbackend.constants.CafeConstants;
 import com.ahmedzahran.cafemangementbackend.dao.UserDao;
 import com.ahmedzahran.cafemangementbackend.model.User;
@@ -9,6 +12,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 
 import java.util.Map;
@@ -20,6 +26,15 @@ public class UserServiceImpl implements UserService {
 
     @Autowired
     UserDao userDao;
+
+    @Autowired
+    AuthenticationManager authenticationManager;
+
+    @Autowired
+    CustomerUsersDetailsService customerUsersDetailsService;
+
+    @Autowired
+    JwtUtil jwtUtil;
 
 
     @Override
@@ -65,5 +80,37 @@ return CafeUtils.getResponseEntity(CafeConstants.SOMETHING_WENT_WRONG, HttpStatu
         user.setRole("User");
 
         return user;
+    }
+
+    @Override
+    public ResponseEntity<String> login(Map<String, String> requestMap) {
+
+        log.info("Inside login");
+
+        try{
+            Authentication auth = authenticationManager.authenticate(
+                    new UsernamePasswordAuthenticationToken(
+                            requestMap.get("email"),
+                            requestMap.get("password"))
+            );
+
+            if (auth.isAuthenticated()){
+                if(customerUsersDetailsService.getUserDetails().getStatus().equalsIgnoreCase("true")){
+                    log.info("Status is true.");
+                    return new ResponseEntity<String>("{\"token\" :\"" +
+                            jwtUtil.generateToken(customerUsersDetailsService.getUserDetails().getEmail(),
+                                    customerUsersDetailsService.getUserDetails().getRole()) + "\"}",HttpStatus.OK);
+                }
+                else{
+                    return new ResponseEntity<String>("{\"message\":\"" + "Wait for admin approval."+"\"}",
+                            HttpStatus.BAD_REQUEST);
+                }
+            }
+        }catch (Exception exp){
+            log.error("{}",exp);
+        }
+
+        return new ResponseEntity<String>("{\"message\":\"" + "BAD Credentials."+"\"}",
+                HttpStatus.BAD_REQUEST);
     }
 }

@@ -3,6 +3,7 @@ package com.ahmedzahran.cafemangementbackend.JWT;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
@@ -12,6 +13,7 @@ import java.util.Map;
 import java.util.function.Function;
 
 @Service
+@Slf4j
 public class JwtUtil {
 
     private String secret = "Btechdays@123";
@@ -37,11 +39,14 @@ public class JwtUtil {
     public String generateToken(String username, String role){
         Map<String, Object> claims = new HashMap<>();
         claims.put("role",role);
+        log.info("Token generated.");
+
         return createToken(claims,username);
 
     }
 
     private String createToken(Map<String, Object> claims, String subject){
+        log.info("Creating token...");
         return Jwts.builder()
                 .setClaims(claims)
                 .setSubject(subject)

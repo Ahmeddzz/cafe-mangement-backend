@@ -32,6 +32,8 @@ public class CustomerUsersDetailsService implements UserDetailsService {
     }
 
     public com.ahmedzahran.cafemangementbackend.model.User getUserDetails(){
-        return userDetails;
+        com.ahmedzahran.cafemangementbackend.model.User user = userDetails;
+        user.setPassword(null);
+        return user;
     }
 }
