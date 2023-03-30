@@ -8,6 +8,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 
 import java.io.Serializable;
 
+@NamedQuery(name="User.findByEmailId", query="select u from User u where u.email=:email")
+
 @Entity
 @Data
 @DynamicInsert
