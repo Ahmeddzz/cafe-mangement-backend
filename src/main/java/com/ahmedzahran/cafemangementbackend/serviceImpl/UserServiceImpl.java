@@ -39,6 +39,9 @@ public class UserServiceImpl implements UserService {
     @Autowired
     JwtUtil jwtUtil;
 
+    @Autowired
+    JwtRequestFilter jwtRequestFilter;
+
 
     @Override
     public ResponseEntity<String> signUp(Map<String, String> requestMap) {
@@ -120,6 +123,12 @@ return CafeUtils.getResponseEntity(CafeConstants.SOMETHING_WENT_WRONG, HttpStatu
     @Override
     public ResponseEntity<List<UserWrapper>> getAllUser() {
         try{
+
+            if(jwtRequestFilter.isAdmin()){
+                return new ResponseEntity<>(userDao.getAllUser(),HttpStatus.OK);
+            } else{
+                return new ResponseEntity<>(new ArrayList<>(),HttpStatus.UNAUTHORIZED);
+            }
 
         } catch(Exception ex){
             ex.printStackTrace();

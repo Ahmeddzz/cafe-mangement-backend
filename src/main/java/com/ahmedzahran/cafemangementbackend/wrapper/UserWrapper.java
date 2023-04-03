@@ -7,13 +7,13 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class UserWrapper {
 
-    private Integer id;
+    private int id;
     private String name;
     private String email;
     private String contactNumber;
     private String status;
 
-    public UserWrapper(Integer id, String name, String email, String contactNumber, String status) {
+    public UserWrapper(int id, String name, String email, String contactNumber, String status) {
         this.id = id;
         this.name = name;
         this.email = email;
