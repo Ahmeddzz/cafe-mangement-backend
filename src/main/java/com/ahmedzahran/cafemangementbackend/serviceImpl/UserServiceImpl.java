@@ -8,6 +8,7 @@ import com.ahmedzahran.cafemangementbackend.dao.UserDao;
 import com.ahmedzahran.cafemangementbackend.model.User;
 import com.ahmedzahran.cafemangementbackend.service.UserService;
 import com.ahmedzahran.cafemangementbackend.utils.CafeUtils;
+import com.ahmedzahran.cafemangementbackend.utils.EmailUtils;
 import com.ahmedzahran.cafemangementbackend.wrapper.UserWrapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,10 +19,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 
 @Service
 @Slf4j
@@ -41,6 +39,9 @@ public class UserServiceImpl implements UserService {
 
     @Autowired
     JwtRequestFilter jwtRequestFilter;
+
+    @Autowired
+    EmailUtils emailUtils;
 
 
     @Override
@@ -135,5 +136,41 @@ return CafeUtils.getResponseEntity(CafeConstants.SOMETHING_WENT_WRONG, HttpStatu
         }
 
         return new ResponseEntity<>(new ArrayList<>(),HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    @Override
+    public ResponseEntity<String> update(Map<String, String> requestMap) {
+        try{
+            if (jwtRequestFilter.isAdmin()){
+               Optional<User> optional =  userDao.findById(Integer.parseInt(requestMap.get("id")));
+               if(!optional.isEmpty()){
+                   userDao.updateStatus(requestMap.get("status"),Integer.parseInt(requestMap.get("id")));
+                   sendMailToAllAdmin(requestMap.get("status"), optional.get().getEmail(),userDao.getAllAdmin());
+                   return CafeUtils.getResponseEntity("User Status updated Successfully.",HttpStatus.OK);
+               }else{
+                   return CafeUtils.getResponseEntity("User ID does not exist.",HttpStatus.OK);
+               }
+            } else{
+                return CafeUtils.getResponseEntity(CafeConstants.UNAUTHORIZED_ACCESS,HttpStatus.UNAUTHORIZED);
+            }
+
+        } catch(Exception ex){
+            ex.printStackTrace();
+        }
+
+        return CafeUtils.getResponseEntity(CafeConstants.SOMETHING_WENT_WRONG,HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    private void sendMailToAllAdmin(String status, String user ,List<String> allAdmin) {
+        
+        allAdmin.remove(jwtRequestFilter.getCurrentUser());
+        if(status !=null && status.equalsIgnoreCase("true")){
+            emailUtils.sendSimpleMessage(jwtRequestFilter.getCurrentUser(),"Account Approved","USER:-"+ user
+                    + "\n is approved by \nADMIN:-" + jwtRequestFilter.getCurrentUser() ,allAdmin );
+        }else{
+            emailUtils.sendSimpleMessage(jwtRequestFilter.getCurrentUser(),"Account Disabled","USER:-"+ user
+                    + "\n is disabled by \nADMIN:-" + jwtRequestFilter.getCurrentUser() ,allAdmin );
+
+        }
     }
 }

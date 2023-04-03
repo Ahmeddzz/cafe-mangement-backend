@@ -7,4 +7,6 @@ public class CafeConstants {
 
     public static final String EMAIL_ALREADY_EXISTS = "Email already exists.";
     public static final String SUCCESSFULLY_REGISTERED = " Successfully Registered.";
+
+    public static final String UNAUTHORIZED_ACCESS = "Unauthorized access.";
 }
