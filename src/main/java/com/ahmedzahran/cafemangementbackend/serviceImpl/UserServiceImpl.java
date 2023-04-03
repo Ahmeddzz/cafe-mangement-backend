@@ -8,6 +8,7 @@ import com.ahmedzahran.cafemangementbackend.dao.UserDao;
 import com.ahmedzahran.cafemangementbackend.model.User;
 import com.ahmedzahran.cafemangementbackend.service.UserService;
 import com.ahmedzahran.cafemangementbackend.utils.CafeUtils;
+import com.ahmedzahran.cafemangementbackend.wrapper.UserWrapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -17,6 +18,8 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
@@ -112,5 +115,16 @@ return CafeUtils.getResponseEntity(CafeConstants.SOMETHING_WENT_WRONG, HttpStatu
 
         return new ResponseEntity<String>("{\"message\":\"" + "BAD Credentials."+"\"}",
                 HttpStatus.BAD_REQUEST);
+    }
+
+    @Override
+    public ResponseEntity<List<UserWrapper>> getAllUser() {
+        try{
+
+        } catch(Exception ex){
+            ex.printStackTrace();
+        }
+
+        return new ResponseEntity<>(new ArrayList<>(),HttpStatus.INTERNAL_SERVER_ERROR);
     }
 }
