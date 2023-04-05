@@ -8,7 +8,7 @@ import org.hibernate.annotations.DynamicUpdate;
 import java.io.Serializable;
 
 
-@NamedQuery(name="Category.getAllCategory",query = "select * from category")
+@NamedQuery(name="Category.getAllCategory",query = "select c from Category c")
 @Entity
 @Data
 @DynamicInsert
