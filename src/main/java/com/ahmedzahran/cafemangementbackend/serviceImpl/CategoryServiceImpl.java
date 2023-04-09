@@ -74,7 +74,6 @@ public class CategoryServiceImpl implements CategoryService {
     @Override
     public ResponseEntity<List<Category>> getAllCategories(String filterValue) {
         try {
-
             if (!Strings.isNullOrEmpty(filterValue) && filterValue.equalsIgnoreCase("true")) {
                 log.info("Inside if");
                 return new ResponseEntity<List<Category>>(categoryDao.getAllCategory(), HttpStatus.OK);
