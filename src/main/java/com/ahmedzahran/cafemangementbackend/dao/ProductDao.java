@@ -8,6 +8,7 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.repository.query.Param;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface ProductDao extends JpaRepository<Product, Integer> {
     List<ProductWrapper> getAllProducts();
@@ -15,4 +16,8 @@ public interface ProductDao extends JpaRepository<Product, Integer> {
     @Modifying
     @Transactional
     Integer updateProductStatus(@Param("status") String status, @Param("id") Integer id);
+
+    List<ProductWrapper> getProductByCategory(@Param("categoryId") Integer categoryId);
+
+    ProductWrapper getProductById(@Param("id") Integer id);
 }

@@ -140,6 +140,8 @@ public class ProductServiceImpl implements ProductService {
         return CafeUtils.somethingWentWrong();
     }
 
+
+
     @Override
     public ResponseEntity<String> updateStatus(Map<String, String> requestMap) {
         try {
@@ -161,10 +163,27 @@ public class ProductServiceImpl implements ProductService {
             ex.printStackTrace();
         }
         return CafeUtils.somethingWentWrong();
+
+
     }
 
+    @Override
+    public ResponseEntity<List<ProductWrapper>> getByCategory(Integer categoryId) {
+        try{
+            return new ResponseEntity<>(productDao.getProductByCategory(categoryId),HttpStatus.OK);
+        } catch (Exception ex){
+            ex.printStackTrace();
+        }
+        return new ResponseEntity<>(new ArrayList<>(), HttpStatus.INTERNAL_SERVER_ERROR);
+    }
 
-
-
-
+    @Override
+    public ResponseEntity<ProductWrapper> getProductById(Integer id) {
+        try{
+            return new ResponseEntity<>(productDao.getProductById(id), HttpStatus.OK);
+        } catch (Exception ex){
+            ex.printStackTrace();
+        }
+        return new ResponseEntity<>(new ProductWrapper(), HttpStatus.INTERNAL_SERVER_ERROR);
+    }
 }
