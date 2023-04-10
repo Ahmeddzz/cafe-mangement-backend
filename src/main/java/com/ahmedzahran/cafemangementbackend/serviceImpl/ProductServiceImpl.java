@@ -45,7 +45,7 @@ public class ProductServiceImpl implements ProductService {
         } catch (Exception ex) {
             ex.printStackTrace();
         }
-        return CafeUtils.getResponseEntity(CafeConstants.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR);
+        return CafeUtils.somethingWentWrong();
     }
 
     private Product getProductFromMap(Map<String, String> requestMap, boolean isAdd) {
@@ -115,6 +115,56 @@ public class ProductServiceImpl implements ProductService {
             ex.printStackTrace();
         }
 
-        return CafeUtils.getResponseEntity(CafeConstants.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR);
+        return CafeUtils.somethingWentWrong();
     }
+
+
+    @Override
+    public ResponseEntity<String> deleteProduct(Integer id) {
+
+        try {
+            if (jwtRequestFilter.isAdmin()) {
+                Optional optional = productDao.findById(id);
+                if (!optional.isEmpty()) {
+                    productDao.deleteById(id);
+                    return CafeUtils.getResponseEntity("Product deleted Successfully.", HttpStatus.OK);
+                } else {
+                    return CafeUtils.getResponseEntity("Product ID does not exist.", HttpStatus.OK);
+                }
+            } else {
+                return CafeUtils.getResponseEntity(CafeConstants.UNAUTHORIZED_ACCESS, HttpStatus.UNAUTHORIZED);
+            }
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+        return CafeUtils.somethingWentWrong();
+    }
+
+    @Override
+    public ResponseEntity<String> updateStatus(Map<String, String> requestMap) {
+        try {
+            if (jwtRequestFilter.isAdmin()) {
+                Optional optional = productDao.findById(Integer.parseInt(requestMap.get("id")));
+
+                if (!optional.isEmpty()){
+                    productDao.updateProductStatus(requestMap.get("status"), Integer.parseInt(requestMap.get("id")));
+                    return CafeUtils.getResponseEntity("Product status updated Successfully",HttpStatus.OK);
+
+                } else{
+                    return CafeUtils.getResponseEntity("Product ID does not exist.", HttpStatus.OK);
+                }
+            } else{
+                return CafeUtils.getResponseEntity(CafeConstants.UNAUTHORIZED_ACCESS,HttpStatus.UNAUTHORIZED);
+            }
+
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+        return CafeUtils.somethingWentWrong();
+    }
+
+
+
+
+
 }
